@@ -1,7 +1,7 @@
 export default function Messages(){
     return(
         <>
-        Messages Loading  Please Wait
+        Messages Loading-Please Wait
         </>
     )
 }
