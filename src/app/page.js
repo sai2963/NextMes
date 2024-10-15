@@ -83,7 +83,7 @@ export default function HomePage() {
               <ul className="space-y-4">
                 {messages.map((msg) => (
                   <li key={msg.id} className="bg-white bg-opacity-20 rounded-lg p-4">
-                    <p className="text-white">"{msg.message}"</p>
+                    <p className="text-white">{`"${msg.message}"`}</p>
                     <p className="text-sm text-purple-200 mt-2"> {msg.username}</p>
                     <p className="text-xs text-purple-300">{formatDate(msg.createdAt)}</p>
                   </li>
