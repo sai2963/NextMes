@@ -2,6 +2,7 @@ import React from 'react';
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../../../../firebase/clientApp";
 import { redirect } from 'next/navigation';
+import MesSend from '@/components/mes-sending';
 export default function NewMessage() {
   async function writemessage(formData) {
     "use server";
@@ -43,12 +44,7 @@ export default function NewMessage() {
             />
           </div>
           <div>
-            <button 
-              type="submit"
-              className="w-full bg-purple-600 text-white font-bold py-3 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 transition duration-200"
-            >
-              Send Message
-            </button>
+           <MesSend/>
           </div>
         </form>
       </div>
