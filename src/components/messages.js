@@ -2,28 +2,45 @@ import React, { useState } from "react";
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase/clientApp";
 import { Heart } from "lucide-react";
+
 export default function Getmessages({ messages }) {
   const [likedmesgs, setLikedmesgs] = useState({});
+
   const handlelike = async (mesId) => {
-    const mesRef = doc(db, "messages", mesId);
-    const mesSnap = await getDoc(mesRef);
-    if (mesSnap.exists()) {
-      const currentlikes = mesSnap.data().likes || 0;
-      const isLiked = likedmesgs[mesId];
-      const newLikes = isLiked ? currentlikes - 1 : currentlikes + 1;
-      await updateDoc(mesRef, {
-        likes: newLikes,
-      });
-      setLikedmesgs((prev) => ({
-        ...prev,
-        [mesId]: !isLiked,
-      }));
-      messages = messages.map(
-        (message) =>
-          (message.id = mesId ? { ...message, likes: newLikes } : message)
-      );
+    try {
+      // Ensure mesId is a valid string
+      if (typeof mesId !== "string") {
+        console.error("Invalid mesId:", mesId);
+        return;
+      }
+
+      const mesRef = doc(db, "messages", mesId);
+      const mesSnap = await getDoc(mesRef);
+
+      if (mesSnap.exists()) {
+        const currentlikes = mesSnap.data().likes || 0;
+        const isLiked = likedmesgs[mesId];
+        const newLikes = isLiked ? currentlikes - 1 : currentlikes + 1;
+
+        await updateDoc(mesRef, {
+          likes: newLikes,
+        });
+
+        setLikedmesgs((prev) => ({
+          ...prev,
+          [mesId]: !isLiked,
+        }));
+
+        // Update likes in the messages array
+        messages = messages.map((message) =>
+          message.id === mesId ? { ...message, likes: newLikes } : message
+        );
+      }
+    } catch (error) {
+      console.error("Error updating likes:", error);
     }
   };
+
   return (
     <div className="max-w-4xl mx-auto">
       <h2 className="text-4xl font-bold text-white mb-8 text-center">
@@ -43,25 +60,24 @@ export default function Getmessages({ messages }) {
                   {message.username}
                 </span>
                 <span className="px-6 pb-4">
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handlelike(message.id);
-                  }}
-                  className={`flex items-center space-x-2 ${
-                    likedmesgs[message.id] ? "text-red-500" : "text-gray-400"
-                  } hover:text-red-500 transition-colors duration-200`}
-                >
-                  <Heart
-                    className={likedmesgs[message] ? "fill-current" : ""}
-                  />
-                </button>
-                <span className="text-sm font-semibold">
-                  {message.likes || 0} likes
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlelike(message.id);
+                    }}
+                    className={`flex items-center space-x-2 ${
+                      likedmesgs[message.id] ? "text-red-500" : "text-gray-400"
+                    } hover:text-red-500 transition-colors duration-200`}
+                  >
+                    <Heart
+                      className={likedmesgs[message.id] ? "fill-current" : ""}
+                    />
+                    <span className="text-sm font-semibold">
+                      {message.likes || 0} likes
+                    </span>
+                  </button>
                 </span>
-              </span>
               </h3>
-              
               <p className="text-white">{message.message}</p>
             </div>
           </div>
