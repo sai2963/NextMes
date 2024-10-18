@@ -2,17 +2,18 @@ import React, { useState } from "react";
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase/clientApp";
 import { Heart } from "lucide-react";
+import { revalidatePath } from "next/cache";
 
 export default function Getmessages({ messages }) {
   const [likedmesgs, setLikedmesgs] = useState({});
 
   const handlelike = async (mesId) => {
-    try {
+    //try {
       // Ensure mesId is a valid string
-      if (typeof mesId !== "string") {
-        console.error("Invalid mesId:", mesId);
-        return;
-      }
+      // if (typeof mesId !== "string") {
+      //   console.error("Invalid mesId:", mesId);
+      //   return;
+      //}
 
       const mesRef = doc(db, "messages", mesId);
       const mesSnap = await getDoc(mesRef);
@@ -35,10 +36,11 @@ export default function Getmessages({ messages }) {
         messages = messages.map((message) =>
           message.id === mesId ? { ...message, likes: newLikes } : message
         );
+        revalidatePath("/")
       }
-    } catch (error) {
-      console.error("Error updating likes:", error);
-    }
+    //} catch (error) {
+      //console.error("Error updating likes:", error);
+    //}
   };
 
   return (
